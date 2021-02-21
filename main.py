@@ -5,6 +5,18 @@ import time
 import json
 import os
 from dotenv import load_dotenv
+from helper import extractTarGz
+
+
+def callback(ch, method, properties, body):
+    print(json.loads(body.decode()))
+    data = json.loads(body.decode())["data"]
+    extractTarGz(data["sourceCodeBase64"], data["assignmentId"], data["projectId"])
+
+    # start docker
+
+    print("finish process message")
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
 def main():
@@ -16,11 +28,6 @@ def main():
 
     channel.queue_declare(queue=os.getenv("RABBITMQ_QUEUE_NAME"))
     channel.basic_qos(prefetch_count=1)
-
-    def callback(ch, method, properties, body):
-        print(json.loads(body.decode())["message"])
-        time.sleep(4)
-        ch.basic_ack(delivery_tag=method.delivery_tag)
 
     channel.basic_consume(
         queue=os.getenv("RABBITMQ_QUEUE_NAME"), on_message_callback=callback
