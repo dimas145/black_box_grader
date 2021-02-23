@@ -5,13 +5,15 @@ import time
 import json
 import os
 from dotenv import load_dotenv
-from helper import extractTarGz
+from extract import extractTarGz
 
 
 def callback(ch, method, properties, body):
     print(json.loads(body.decode()))
     data = json.loads(body.decode())["data"]
-    extractTarGz(data["sourceCodeBase64"], data["assignmentId"], data["projectId"])
+
+    sourceCodeBasePath = "tmp/src"
+    extractTarGz(data["sourceCodeBase64"], sourceCodeBasePath)
 
     # start docker
 
