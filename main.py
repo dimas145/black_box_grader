@@ -6,6 +6,7 @@ import json
 import os
 from dotenv import load_dotenv
 from extract import extractTarGz
+from grader import Grader
 
 
 def callback(ch, method, properties, body):
@@ -13,12 +14,14 @@ def callback(ch, method, properties, body):
     data = json.loads(body.decode())["data"]
 
     sourceCodeBasePath = "tmp/src"
-    extractTarGz(data["sourceCodeBase64"], sourceCodeBasePath)
+    extractTarGz(tarGzBase64=data["sourceCodeBase64"], basePath=sourceCodeBasePath)
 
     # start docker
+    grade = Grader(tmpPath="tmp", entryPoint=data["entry"], testcases=data["testcases"])
+    grade.grade()
 
     print("finish process message")
-    ch.basic_ack(delivery_tag=method.delivery_tag)
+    # ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
 def main():
