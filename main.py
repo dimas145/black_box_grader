@@ -21,7 +21,7 @@ def callback(ch, method, properties, body):
     grade.grade()
 
     print("finish process message")
-    # ch.basic_ack(delivery_tag=method.delivery_tag)
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
 def main():
