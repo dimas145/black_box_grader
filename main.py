@@ -4,6 +4,7 @@ import pika, sys, os
 import time
 import json
 import os
+import requests
 from dotenv import load_dotenv
 from extract import extractTarGz
 from grader import Grader
@@ -18,7 +19,16 @@ def callback(ch, method, properties, body):
 
     # start docker
     grade = Grader(tmpPath="tmp", entryPoint=data["entry"], testcases=data["testcases"])
-    grade.grade()
+    result =  grade.grade()
+    result['user'] = {
+        'projectId': data["projectId"],
+        'userId': data["userId"],
+        'courseId': data["courseId"],
+        'activityId': data["activityId"]
+    }
+    headers = {'Content-Type': "application/json"}
+
+    requests.post(f'{os.getenv("BRIDGE_SERVICE_URL")}/callback/',data=json.dumps(result), headers=headers)
 
     print("finish process message")
     ch.basic_ack(delivery_tag=method.delivery_tag)

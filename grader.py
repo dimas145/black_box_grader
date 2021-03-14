@@ -1,6 +1,5 @@
 import docker
 import os
-import uuid
 import json
 import requests
 
@@ -16,7 +15,6 @@ class Grader:
         self.entryPoint = entryPoint
         self.testcases = testcases
         self.container = None
-        self.cid = str(uuid.uuid4()) # container id
 
     def grade(self):
         count = 0
@@ -42,29 +40,29 @@ class Grader:
                 pids_limit=64,
                 detach=True,
                 log_config={
-                'config': {
-                    'mode': 'non-blocking',
-                    'max-size': '1m',
-                    'max-file': '2'
+                "config": {
+                    "mode": "non-blocking",
+                    "max-size": "1m",
+                    "max-file": "2"
                 }}
             )
 
-            chunk = b''
+            chunk = b""
             try:
                 output = self.container.wait(timeout=2) # in s
             except requests.exceptions.ConnectionError:
                 self.container.remove(force=True)
                 result.append({
-                    'isCorrect': False,
-                    'reason': TIME_LIMIT_REASON
+                    "isCorrect": False,
+                    "reason": TIME_LIMIT_REASON
                 })
                 continue
 
             for line in self.container.logs(stream=True, follow=True):
                 chunk += line
 
-            if(output['StatusCode'] == 0):
-                if (chunk.decode().rstrip() == testcase['output']):
+            if(output["StatusCode"] == 0):
+                if (chunk.decode().rstrip() == testcase["output"]):
                     total_correct += 1
                 else:
                     reason = "wrong answer"
@@ -74,8 +72,8 @@ class Grader:
             
             
             result.append({
-                'isCorrect': isCorrect,
-                'reason': reason
+                "isCorrect": isCorrect,
+                "reason": reason
             })
             
             self.container.remove(force=True)
@@ -85,15 +83,24 @@ class Grader:
             point = (total_correct / count) * 100
         
         response = {
-            'total': point,
-            'detail': result
+            "total": point,
+            "detail": result
         }
 
         # print(json.dumps(response))
-        return json.dumps(response)
+        return response
 
 
-testcase_json = "{\"testcases\": [{\"input\": \"1\",\"output\": \"True\"},{\"input\": \"2\",\"output\": \"False\"}]}"
+# from dotenv import load_dotenv
+# load_dotenv()
+# testcase_json = "{\"testcases\": [{\"input\": \"1\",\"output\": \"True\"},{\"input\": \"2\",\"output\": \"False\"}]}"
 
-grade = Grader(tmpPath="tmp", entryPoint='test.py', testcases=json.loads(testcase_json)['testcases'])
-grade.grade()
+# grade = Grader(tmpPath="tmp", entryPoint="main.py", testcases=json.loads(testcase_json)["testcases"])
+# result =  grade.grade()
+# result["user"] = {
+#     "projectId": 43141221
+# }
+
+# headers = {'Content-Type': "application/json"}
+
+# requests.post(f"{os.getenv('BRIDGE_SERVICE_URL')}/callback/1234",data=json.dumps(result), headers=headers)
