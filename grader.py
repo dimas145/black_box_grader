@@ -5,9 +5,10 @@ import requests
 
 client = docker.from_env()
 
-IMAGE_NAME = "python:latest"  # create custom linux with alpine to reduce size
+IMAGE_NAME = "python:3.9-alpine"  # create custom linux with alpine to reduce size
 SANDBOX_TMP_DIR = "/workspace"
 TIME_LIMIT_REASON = "Time Limit Exceeded"
+UNKNOWN_REASON = "Something Error"
 
 class Grader:
     def __init__(self, tmpPath, entryPoint, testcases):
@@ -23,7 +24,6 @@ class Grader:
         for testcase in self.testcases:
             count += 1
             command = f"echo {testcase['input']} | python3 {self.entryPoint}"
-            command2 = "sleep 60"
             reason = "success"
             isCorrect = True
             # add time limit
@@ -42,8 +42,8 @@ class Grader:
                 log_config={
                 "config": {
                     "mode": "non-blocking",
-                    "max-size": "1m",
-                    "max-file": "2"
+                    "max-size": "50m",
+                    "max-file": "100"
                 }}
             )
 
@@ -55,6 +55,13 @@ class Grader:
                 result.append({
                     "isCorrect": False,
                     "reason": TIME_LIMIT_REASON
+                })
+                continue
+            except e:
+                self.container.remove(force=True)
+                result.append({
+                    "isCorrect": False,
+                    "reason": UNKNOWN_REASON
                 })
                 continue
 
