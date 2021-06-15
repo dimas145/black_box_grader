@@ -32,7 +32,7 @@ def callback(ch, method, properties, body):
     requests.post(f'{os.getenv("BRIDGE_SERVICE_URL")}/callback/',data=json.dumps(result), headers=headers)
     end_time = time.time() - start_time
     with open("execution_time.log", "a+") as f:
-        f.write(f"{end_time}")
+        f.write(f"{end_time}\n")
     print("finish process message")
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
