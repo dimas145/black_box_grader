@@ -8,9 +8,10 @@ import requests
 from dotenv import load_dotenv
 from extract import extractTarGz
 from grader import Grader
-
+import time
 
 def callback(ch, method, properties, body):
+    start_time = time.time()
     print(json.loads(body.decode()))
     data = json.loads(body.decode())["data"]
 
@@ -29,7 +30,9 @@ def callback(ch, method, properties, body):
     headers = {'Content-Type': "application/json"}
 
     requests.post(f'{os.getenv("BRIDGE_SERVICE_URL")}/callback/',data=json.dumps(result), headers=headers)
-
+    end_time = time.time() - start_time
+    with open("execution_time.log", "a+") as f:
+        f.write(f"{end_time}")
     print("finish process message")
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
