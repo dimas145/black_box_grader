@@ -23,8 +23,8 @@ class BlackBoxGrader(Resource):
             return get_response(err=True, msg='Source code submission required', status_code=HTTPStatus.BAD_REQUEST)
 
         submissionId = request_json["submissionId"]
-        testcases = [base64.b64decode(tc) for tc in request_json["references"]]
-        src = base64.b64decode(request_json["solution"])
+        testcases = [json.loads(base64.b64decode(tc).decode("ascii")) for tc in request_json["references"]]
+        src = base64.b64decode(request_json["solution"]).decode("ascii")
 
         try:
             self.logger.info("Black box grading started...")
