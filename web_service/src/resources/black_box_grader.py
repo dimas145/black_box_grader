@@ -14,24 +14,22 @@ class BlackBoxGrader(Resource):
         self.logger = create_logger()
 
     def post(self):
-        if "submissionId" not in request.form:
+        request_json = request.get_json()
+        if "submissionId" not in request_json:
             return get_response(err=True, msg='Submission id required', status_code=HTTPStatus.BAD_REQUEST)
-        if "references" not in request.form:
+        if "references" not in request_json:
             return get_response(err=True, msg='References required', status_code=HTTPStatus.BAD_REQUEST)
-        if "solution" not in request.form:
+        if "solution" not in request_json:
             return get_response(err=True, msg='Source code submission required', status_code=HTTPStatus.BAD_REQUEST)
 
-        submissionId = request.form["submissionId"]
-        references: list = request.form["references"]
-        solution = request.form["solution"]
-
-        testcases = [base64.b64decode(tc) for tc in references]
-        src = base64.b64decode(solution)
+        submissionId = request_json["submissionId"]
+        testcases = [base64.b64decode(tc) for tc in request_json["references"]]
+        src = base64.b64decode(request_json["solution"])
 
         try:
             self.logger.info("Black box grading started...")
             # total, details = grade(testcases, src)    # TODO refactor black_box_grader
-            total, details = 0, "TODO"
+            total, details = 50, "temp"
             self.logger.info("Black box grading successfully done!")
             responsePayload = {
                 "submissionId": submissionId,
