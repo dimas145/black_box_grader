@@ -2,7 +2,7 @@ import docker
 import os
 import requests
 
-# client = docker.from_env()
+client = docker.from_env()
 
 IMAGE_NAME = "python:3.9-alpine"  # create custom linux with alpine to reduce size
 SANDBOX_TMP_DIR = "/workspace"

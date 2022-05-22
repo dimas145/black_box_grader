@@ -4,5 +4,7 @@ services:
     container_name: grader
     build: .
     restart: on-failure
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "5000:5000"
