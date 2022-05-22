@@ -1,3 +1,7 @@
 docker
 pika
 python-dotenv
+rich
+Flask
+Flask-RESTful
+Werkzeug

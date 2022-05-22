@@ -1,6 +1,5 @@
 import docker
 import os
-import json
 import requests
 
 client = docker.from_env()
@@ -32,8 +31,8 @@ class Grader:
                 command=f"sh -c '{command}'",
                 read_only=True,
                 network_mode="none",
-                volumes={self.tmpPath: {"bind": SANDBOX_TMP_DIR, "mode": "ro"}},
-                working_dir=os.path.join(SANDBOX_TMP_DIR, "src"),
+                # volumes={self.tmpPath: {"bind": SANDBOX_TMP_DIR, "mode": "ro"}},
+                # working_dir=os.path.join(SANDBOX_TMP_DIR, "src"),
                 nano_cpus=1 * 1000000000,
                 mem_limit="128m",
                 memswap_limit="256m",
@@ -57,7 +56,7 @@ class Grader:
                     "reason": TIME_LIMIT_REASON
                 })
                 continue
-            except e:
+            except Exception as e:
                 self.container.remove(force=True)
                 result.append({
                     "isCorrect": False,

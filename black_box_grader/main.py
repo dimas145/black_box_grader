@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
-import pika, sys, os
+import pika, os
 import time
 import json
 import os
 import requests
 from dotenv import load_dotenv
-from extract import extractTarGz
-from grader import Grader
+from black_box_grader.src.extract import extractTarGz
+from black_box_grader.src.black_box_grader import Grader
 import time
 
 def callback(ch, method, properties, body):

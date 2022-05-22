@@ -3,3 +3,4 @@
 *.tar.gz
 tmp/
 **/__pycache__/
+.vscode
