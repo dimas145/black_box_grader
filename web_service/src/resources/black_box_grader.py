@@ -1,12 +1,13 @@
 from flask import request
 from flask_restful import Resource
 
-from black_box_grader.src.black_box_grader import Grader
+from black_box_grader.src.black_box_grader import *
 from web_service.src.utils.logz import create_logger
 from web_service.src.utils.wrapper import *
 from http import HTTPStatus
 
 import base64
+import json
 
 
 class BlackBoxGrader(Resource):
@@ -24,16 +25,15 @@ class BlackBoxGrader(Resource):
 
         submissionId = request_json["submissionId"]
         testcases = [json.loads(base64.b64decode(tc).decode("ascii")) for tc in request_json["references"]]
-        src = base64.b64decode(request_json["solution"]).decode("ascii")
+        base64Source = request_json["solution"] # decode when running the container
 
         try:
             self.logger.info("Black box grading started...")
-            # total, details = grade(testcases, src)    # TODO refactor black_box_grader
-            total, details = 50, "temp"
+            points, details = grade(testcases, base64Source)
             self.logger.info("Black box grading successfully done!")
             responsePayload = {
                 "submissionId": submissionId,
-                "grade": total,
+                "grade": points,
                 "extra": {
                     "feedback": details,
                 },
