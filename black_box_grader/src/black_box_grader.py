@@ -14,7 +14,7 @@ def grade(testcases: list, base64Source: str):
 
     for testcase in testcases:
         command = f"touch {fileName} && echo `echo {base64Source} | base64 -d` > {fileName} && echo \"{testcase['input']}\" | python3 {fileName}"
-        reason = "correct"
+        reason = "correct answer"
 
         # add time limit
         container = client.containers.run(
