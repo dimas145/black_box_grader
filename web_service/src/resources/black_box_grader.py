@@ -28,9 +28,7 @@ class BlackBoxGrader(Resource):
         base64Source = request_json["solution"] # decode when running the container
 
         try:
-            self.logger.info("Black box grading started...")
             points, details = grade(testcases, base64Source)
-            self.logger.info("Black box grading successfully done!")
             responsePayload = {
                 "submissionId": submissionId,
                 "grade": points,
