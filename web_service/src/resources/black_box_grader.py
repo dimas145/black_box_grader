@@ -28,9 +28,7 @@ class BlackBoxGrader(Resource):
             points, details = grade(testcases, base64Source)
             responseData = {
                 "grade": points,
-                "extra": {
-                    "feedback": details,
-                },
+                "feedback": details,
             }
             return get_response(err=False, msg="success", data=responseData, status_code=HTTPStatus.OK)
         except Exception as e:
